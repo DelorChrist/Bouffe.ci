@@ -1,0 +1,322 @@
+<!-- src/app/pages/role-register/role-register.component.html -->
+<div class="role-register-page">
+  <div class="register-container">
+    
+    <!-- Step 1: Role Selection -->
+    <div class="role-selection" *ngIf="step === 'role'">
+      <div class="selection-header fade-in">
+        <h1>Rejoignez Bouffe.Ci</h1>
+        <p>Choisissez votre type de compte</p>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card fade-in" (click)="selectRole('user')">
+          <div class="role-icon">👤</div>
+          <h3>Client</h3>
+          <p>Commander et profiter de nos délicieux plats</p>
+          <ul class="role-features">
+            <li>✓ Commande en ligne</li>
+            <li>✓ Suivi de livraison</li>
+            <li>✓ Historique des commandes</li>
+            <li>✓ Favoris</li>
+          </ul>
+          <button class="btn btn-primary">Continuer</button>
+        </div>
+
+        <div class="role-card fade-in" style="animation-delay: 0.1s" (click)="selectRole('chef')">
+          <div class="role-icon">👨‍🍳</div>
+          <h3>Cuisinier</h3>
+          <p>Partagez votre passion et vos recettes</p>
+          <ul class="role-features">
+            <li>✓ Proposer vos plats</li>
+            <li>✓ Gérer votre menu</li>
+            <li>✓ Recevoir des commandes</li>
+            <li>✓ Revenus réguliers</li>
+          </ul>
+          <span class="pending-badge">Validation requise</span>
+          <button class="btn btn-primary">Postuler</button>
+        </div>
+
+        <div class="role-card fade-in" style="animation-delay: 0.2s" (click)="selectRole('livreur')">
+          <div class="role-icon">🏍️</div>
+          <h3>Livreur</h3>
+          <p>Livrez et gagnez en toute flexibilité</p>
+          <ul class="role-features">
+            <li>✓ Horaires flexibles</li>
+            <li>✓ Revenus attractifs</li>
+            <li>✓ Zone de livraison libre</li>
+            <li>✓ Assurance incluse</li>
+          </ul>
+          <span class="pending-badge">Validation requise</span>
+          <button class="btn btn-primary">Postuler</button>
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        <p>Vous avez déjà un compte ?</p>
+        <button class="btn btn-secondary" (click)="goToLogin()">
+          Se connecter
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Registration Form -->
+    <div class="registration-form" *ngIf="step === 'form'">
+      <button class="back-btn" (click)="backToRoleSelection()">
+        ← Retour
+      </button>
+
+      <div class="form-header fade-in">
+        <div class="selected-role-badge">
+          <span class="role-icon">
+            {{ selectedRole === 'user' ? '👤' : selectedRole === 'chef' ? '👨‍🍳' : '🏍️' }}
+          </span>
+          <span class="role-name">
+            {{ selectedRole === 'user' ? 'Client' : selectedRole === 'chef' ? 'Cuisinier' : 'Livreur' }}
+          </span>
+        </div>
+        <h2>Créer mon compte</h2>
+        <p *ngIf="selectedRole !== 'user'" class="validation-note">
+          ⚠️ Votre compte sera vérifié par un administrateur avant activation
+        </p>
+      </div>
+
+      <div class="alert alert-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="auth-form">
+        <!-- Informations de base -->
+        <div class="form-section">
+          <h3>📋 Informations personnelles</h3>
+          
+          <div class="form-group">
+            <label for="name">Nom complet *</label>
+            <input
+              type="text"
+              id="name"
+              [(ngModel)]="formData.name"
+              name="name"
+              placeholder="Ex: Kouassi Jean"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                [(ngModel)]="formData.email"
+                name="email"
+                placeholder="votre@email.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Téléphone *</label>
+              <input
+                type="tel"
+                id="phone"
+                [(ngModel)]="formData.phone"
+                name="phone"
+                placeholder="+225 XX XX XX XX XX"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="password">Mot de passe *</label>
+              <input
+                type="password"
+                id="password"
+                [(ngModel)]="formData.password"
+                name="password"
+                placeholder="Min. 6 caractères"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirmer le mot de passe *</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                [(ngModel)]="formData.confirmPassword"
+                name="confirmPassword"
+                placeholder="Retapez votre mot de passe"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Chef -->
+        <div class="form-section" *ngIf="selectedRole === 'chef'">
+          <h3>👨‍🍳 Informations professionnelles</h3>
+          
+          <div class="form-group">
+            <label>Spécialités * (ex: Attiéké, Foutou, Alloco...)</label>
+            <div class="specialty-input">
+              <input
+                type="text"
+                [(ngModel)]="specialtyInput"
+                name="specialtyInput"
+                placeholder="Ajouter une spécialité"
+                (keyup.enter)="addSpecialty()"
+              />
+              <button type="button" class="btn btn-secondary" (click)="addSpecialty()">
+                + Ajouter
+              </button>
+            </div>
+            <div class="specialties-list" *ngIf="formData.specialties && formData.specialties.length > 0">
+              <span 
+                *ngFor="let specialty of formData.specialties; let i = index"
+                class="specialty-tag"
+              >
+                {{ specialty }}
+                <button type="button" (click)="removeSpecialty(i)">×</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="experience">Expérience *</label>
+            <textarea
+              id="experience"
+              [(ngModel)]="formData.experience"
+              name="experience"
+              rows="4"
+              placeholder="Décrivez votre expérience en cuisine (années d'expérience, formations, lieux de travail...)"
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Section Livreur -->
+        <div class="form-section" *ngIf="selectedRole === 'livreur'">
+          <h3>🏍️ Informations de livraison</h3>
+          
+          <div class="form-group">
+            <label>Type de véhicule *</label>
+            <div class="vehicle-types">
+              <label 
+                *ngFor="let vehicle of vehicleTypes"
+                class="vehicle-option"
+                [class.selected]="formData.vehicleType === vehicle"
+              >
+                <input
+                  type="radio"
+                  name="vehicleType"
+                  [value]="vehicle"
+                  [(ngModel)]="formData.vehicleType"
+                />
+                <span>{{ vehicle }}</span>
+              </label>
+            </div>
+          </div>
+
+          <h3>📄 Documents requis</h3>
+          <p class="doc-note">Téléchargez les photos recto et verso de vos documents</p>
+
+          <div class="documents-grid">
+            <!-- Pièce d'identité recto -->
+            <div class="document-upload">
+              <label class="upload-label">
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onFileSelect($event, 'idCardFront')"
+                  hidden
+                />
+                <div class="upload-box" [class.uploaded]="uploadedDocs.idCardFront">
+                  <span class="upload-icon">
+                    {{ uploadedDocs.idCardFront ? '✓' : '📷' }}
+                  </span>
+                  <span class="upload-text">
+                    {{ uploadedDocs.idCardFront ? 'Photo chargée' : 'Pièce d\'identité (Recto)' }}
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Pièce d'identité verso -->
+            <div class="document-upload">
+              <label class="upload-label">
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onFileSelect($event, 'idCardBack')"
+                  hidden
+                />
+                <div class="upload-box" [class.uploaded]="uploadedDocs.idCardBack">
+                  <span class="upload-icon">
+                    {{ uploadedDocs.idCardBack ? '✓' : '📷' }}
+                  </span>
+                  <span class="upload-text">
+                    {{ uploadedDocs.idCardBack ? 'Photo chargée' : 'Pièce d\'identité (Verso)' }}
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Permis recto -->
+            <div class="document-upload">
+              <label class="upload-label">
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onFileSelect($event, 'drivingLicenseFront')"
+                  hidden
+                />
+                <div class="upload-box" [class.uploaded]="uploadedDocs.drivingLicenseFront">
+                  <span class="upload-icon">
+                    {{ uploadedDocs.drivingLicenseFront ? '✓' : '📷' }}
+                  </span>
+                  <span class="upload-text">
+                    {{ uploadedDocs.drivingLicenseFront ? 'Photo chargée' : 'Permis de conduire (Recto)' }}
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Permis verso -->
+            <div class="document-upload">
+              <label class="upload-label">
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onFileSelect($event, 'drivingLicenseBack')"
+                  hidden
+                />
+                <div class="upload-box" [class.uploaded]="uploadedDocs.drivingLicenseBack">
+                  <span class="upload-icon">
+                    {{ uploadedDocs.drivingLicenseBack ? '✓' : '📷' }}
+                  </span>
+                  <span class="upload-text">
+                    {{ uploadedDocs.drivingLicenseBack ? 'Photo chargée' : 'Permis de conduire (Verso)' }}
+                  </span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-full"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="!isLoading">
+            {{ selectedRole === 'user' ? 'Créer mon compte' : 'Soumettre ma candidature' }}
+          </span>
+          <span *ngIf="isLoading">Inscription...</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

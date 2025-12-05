@@ -1,0 +1,102 @@
+<!-- src/app/pages/register/register.component.html -->
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card fade-in">
+      <div class="auth-header">
+        <h1>Créer un compte</h1>
+        <p>Rejoignez Bouffe.Ci pour commander facilement</p>
+      </div>
+
+      <div class="alert alert-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-group">
+          <label for="name">Nom complet *</label>
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="Ex: Kouassi Jean"
+            required
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="formData.email"
+            name="email"
+            placeholder="votre@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Téléphone *</label>
+          <input
+            type="tel"
+            id="phone"
+            [(ngModel)]="formData.phone"
+            name="phone"
+            placeholder="+225 XX XX XX XX XX"
+            required
+            autocomplete="tel"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe *</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="formData.password"
+            name="password"
+            placeholder="Min. 6 caractères"
+            required
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmer le mot de passe *</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            [(ngModel)]="formData.confirmPassword"
+            name="confirmPassword"
+            placeholder="Retapez votre mot de passe"
+            required
+            autocomplete="new-password"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-full"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="!isLoading">Créer mon compte</span>
+          <span *ngIf="isLoading">Inscription...</span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Vous avez déjà un compte ?</p>
+        <button class="btn btn-secondary" (click)="goToLogin()">
+          Se connecter
+        </button>
+      </div>
+
+      <div class="back-home">
+        <a routerLink="/">← Retour à l'accueil</a>
+      </div>
+    </div>
+  </div>
+</div>

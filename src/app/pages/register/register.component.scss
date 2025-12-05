@@ -1,0 +1,13 @@
+// Importer les mêmes styles que login
+@import '../login/login.component.scss';
+
+// Ajustements spécifiques pour le formulaire d'inscription
+.auth-card {
+  max-width: 500px;
+}
+
+.form-group {
+  input[type="tel"] {
+    font-family: inherit;
+  }
+}

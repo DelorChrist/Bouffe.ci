@@ -1,0 +1,87 @@
+<!-- src/app/pages/about/about.component.html -->
+<div class="about-page">
+  <!-- Hero Section -->
+  <section class="about-hero">
+    <div class="container">
+      <h1 class="fade-in">Notre Histoire</h1>
+      <p class="hero-subtitle fade-in">La passion de la cuisine ivoirienne depuis 1960</p>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section class="story-section">
+    <div class="container">
+      <div class="story-content">
+        <div class="story-text fade-in">
+          <h2>Bienvenue chez Bouffe.Ci</h2>
+          <p>
+            Fondé en 2025 à Abidjan, Bouffe.Ci est né d'une passion pour la cuisine traditionnelle 
+            ivoirienne et du désir de la partager avec le monde. Notre restaurant familial s'est 
+            donné pour mission de préserver et de célébrer les saveurs authentiques de la Côte d'Ivoire.
+          </p>
+          <p>
+            Chaque jour, notre équipe de chefs passionnés prépare des plats traditionnels en 
+            utilisant des recettes ancestrales et des ingrédients locaux soigneusement sélectionnés. 
+            De l'attiéké au foutou, en passant par nos sauces onctueuses, chaque plat raconte 
+            une histoire et célèbre notre riche patrimoine culinaire.
+          </p>
+          <p>
+            Aujourd'hui, grâce à notre service de livraison, nous avons le plaisir d'apporter 
+            ces saveurs directement chez vous, où que vous soyez à Abidjan.
+          </p>
+        </div>
+        <div class="story-image scale-in">
+          <img src="assets/images/restaurant.jpeg" alt="Notre restaurant" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div 
+          *ngFor="let stat of stats; let i = index"
+          class="stat-card fade-in"
+          [style.animation-delay]="i * 0.1 + 's'"
+        >
+          <div class="stat-icon">{{ stat.icon }}</div>
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="values-section">
+    <div class="container">
+      <h2 class="section-title fade-in">Nos Valeurs</h2>
+      <div class="values-grid">
+        <div 
+          *ngFor="let value of values; let i = index"
+          class="value-card fade-in"
+          [style.animation-delay]="i * 0.1 + 's'"
+        >
+          <div class="value-icon">{{ value.icon }}</div>
+          <h3>{{ value.title }}</h3>
+          <p>{{ value.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content fade-in">
+        <h2>Prêt à goûter nos délices ?</h2>
+        <p>Découvrez notre menu et commandez vos plats préférés en quelques clics</p>
+        <button class="btn btn-primary" routerLink="/menu">
+          Découvrir le menu
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

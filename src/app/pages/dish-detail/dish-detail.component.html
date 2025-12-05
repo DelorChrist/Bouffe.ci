@@ -1,0 +1,140 @@
+<!-- src/app/pages/dish-detail/dish-detail.component.html -->
+<div class="dish-detail-page">
+  <app-loading *ngIf="isLoading" [message]="'Chargement...'"></app-loading>
+
+  <div class="container" *ngIf="!isLoading && dish">
+    <!-- Back Button -->
+    <button class="back-btn fade-in" (click)="goBack()">
+      ← Retour au menu
+    </button>
+
+    <!-- Main Content -->
+    <div class="dish-detail-content">
+      <!-- Image Section -->
+      <div class="dish-image-section fade-in">
+        <div class="image-container">
+          <img [src]="dish.image" [alt]="dish.name" />
+          <button 
+            class="favorite-btn"
+            [class.active]="isFavorite"
+            (click)="toggleFavorite()"
+          >
+            {{ isFavorite ? '❤️' : '🤍' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Info Section -->
+      <div class="dish-info-section fade-in" style="animation-delay: 0.2s">
+        <div class="dish-header">
+          <div class="dish-titles">
+            <h1>{{ dish.name }}</h1>
+            <p class="dish-name-en">{{ dish.nameEn }}</p>
+          </div>
+          <div class="dish-price">
+            <span class="price-label">Prix</span>
+            <span class="price-value">{{ dish.price }} FCFA</span>
+          </div>
+        </div>
+
+        <p class="dish-description">{{ dish.description }}</p>
+
+        <!-- Quick Info -->
+        <div class="quick-info">
+          <div class="info-item" *ngIf="dish.preparationTime">
+            <span class="icon">⏱️</span>
+            <div>
+              <span class="label">Temps de préparation</span>
+              <span class="value">{{ dish.preparationTime }}</span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="dish.servings">
+            <span class="icon">👤</span>
+            <div>
+              <span class="label">Portions</span>
+              <span class="value">{{ dish.servings }} personne</span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="dish.spicyLevel !== undefined">
+            <span class="icon">🌶️</span>
+            <div>
+              <span class="label">Niveau épicé</span>
+              <span class="value">{{ getSpicyLevelText(dish.spicyLevel) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingredients -->
+        <div class="ingredients-section" *ngIf="dish.ingredients && dish.ingredients.length > 0">
+          <h2>🥘 Ingrédients</h2>
+          <ul class="ingredients-list">
+            <li *ngFor="let ingredient of dish.ingredients" class="ingredient-item">
+              <span class="checkmark">✓</span>
+              {{ ingredient }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nutritional Info -->
+        <div class="nutrition-section" *ngIf="dish.nutritionalInfo">
+          <h2>📊 Informations nutritionnelles (par portion)</h2>
+          <div class="nutrition-grid">
+            <div class="nutrition-item" *ngIf="dish.nutritionalInfo.calories">
+              <span class="nutrition-value">{{ dish.nutritionalInfo.calories }}</span>
+              <span class="nutrition-label">Calories</span>
+            </div>
+            <div class="nutrition-item" *ngIf="dish.nutritionalInfo.protein">
+              <span class="nutrition-value">{{ dish.nutritionalInfo.protein }}</span>
+              <span class="nutrition-label">Protéines</span>
+            </div>
+            <div class="nutrition-item" *ngIf="dish.nutritionalInfo.carbs">
+              <span class="nutrition-value">{{ dish.nutritionalInfo.carbs }}</span>
+              <span class="nutrition-label">Glucides</span>
+            </div>
+            <div class="nutrition-item" *ngIf="dish.nutritionalInfo.fat">
+              <span class="nutrition-value">{{ dish.nutritionalInfo.fat }}</span>
+              <span class="nutrition-label">Lipides</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add to Cart Section -->
+        <div class="add-to-cart-section">
+          <div class="quantity-selector">
+            <button class="qty-btn" (click)="decrementQuantity()">−</button>
+            <span class="quantity">{{ quantity }}</span>
+            <button class="qty-btn" (click)="incrementQuantity()">+</button>
+          </div>
+
+          <button class="btn btn-primary add-to-cart-btn" (click)="addToCart()">
+            <span class="btn-icon">🛒</span>
+            Ajouter au panier - {{ dish.price * quantity }} FCFA
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Dishes -->
+    <div class="related-section" *ngIf="relatedDishes.length > 0">
+      <h2 class="section-title fade-in">Vous aimerez aussi</h2>
+      <div class="related-grid">
+        <div 
+          *ngFor="let relatedDish of relatedDishes; let i = index"
+          class="related-card"
+          [style.animation-delay]="i * 0.1 + 's'"
+          (click)="viewRelatedDish(relatedDish.id)"
+        >
+          <div class="related-image">
+            <img [src]="relatedDish.image" [alt]="relatedDish.name" />
+          </div>
+          <div class="related-info">
+            <h3>{{ relatedDish.name }}</h3>
+            <p class="related-price">{{ relatedDish.price }} FCFA</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,160 @@
+<!-- src/app/pages/checkout/checkout.component.html -->
+<div class="checkout-page">
+  <div class="container">
+    
+    <!-- Order Confirmation -->
+    <div class="order-confirmation" *ngIf="orderComplete">
+      <div class="success-animation">
+        <div class="checkmark">✓</div>
+      </div>
+      <h1>Commande confirmée !</h1>
+      <p class="order-number">Numéro de commande: <strong>{{ orderNumber }}</strong></p>
+      <p class="success-message">
+        Votre commande a été reçue et sera livrée dans 30-45 minutes.
+        <br>Merci pour votre confiance !
+      </p>
+      <button class="btn btn-primary" (click)="goToHome()">
+        Retour à l'accueil
+      </button>
+    </div>
+
+    <!-- Checkout Form -->
+    <div class="checkout-content" *ngIf="!orderComplete">
+      <h1 class="page-title fade-in">Finaliser la commande</h1>
+
+      <div class="checkout-grid">
+        <!-- Left: Forms -->
+        <div class="checkout-forms">
+          
+          <!-- Delivery Info -->
+          <div class="form-section fade-in">
+            <h2>📍 Informations de livraison</h2>
+            <div class="form-group">
+              <label>Nom complet *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="customerName"
+                placeholder="Entrez votre nom"
+              />
+            </div>
+            <div class="form-group">
+              <label>Téléphone *</label>
+              <input 
+                type="tel" 
+                [(ngModel)]="phone"
+                placeholder="+225 XX XX XX XX XX"
+              />
+            </div>
+            <div class="form-group">
+              <label>Adresse de livraison *</label>
+              <textarea 
+                [(ngModel)]="address"
+                placeholder="Commune, quartier, repères..."
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Instructions spéciales (optionnel)</label>
+              <textarea 
+                [(ngModel)]="notes"
+                placeholder="Allergies, préférences..."
+                rows="2"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="form-section fade-in" style="animation-delay: 0.2s">
+            <h2>💳 Mode de paiement</h2>
+            <div class="payment-methods">
+              <div 
+                class="payment-option"
+                [class.active]="paymentMethod === 'mobile'"
+                (click)="selectPaymentMethod('mobile')"
+              >
+                <span class="payment-icon">📱</span>
+                <div class="payment-info">
+                  <strong>Mobile Money</strong>
+                  <small>MTN, Moov, Orange</small>
+                </div>
+              </div>
+
+              <div 
+                class="payment-option"
+                [class.active]="paymentMethod === 'card'"
+                (click)="selectPaymentMethod('card')"
+              >
+                <span class="payment-icon">💳</span>
+                <div class="payment-info">
+                  <strong>Carte bancaire</strong>
+                  <small>Visa, Mastercard</small>
+                </div>
+              </div>
+
+              <div 
+                class="payment-option"
+                [class.active]="paymentMethod === 'cash'"
+                (click)="selectPaymentMethod('cash')"
+              >
+                <span class="payment-icon">💵</span>
+                <div class="payment-info">
+                  <strong>Espèces</strong>
+                  <small>À la livraison</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="order-summary-sticky">
+          <div class="order-summary fade-in" style="animation-delay: 0.3s">
+            <h2>Votre commande</h2>
+
+            <div class="order-items">
+              <div class="order-item" *ngFor="let item of cartItems">
+                <div class="item-info">
+                  <span class="item-name">{{ item.dish.name }}</span>
+                  <span class="item-qty">x{{ item.quantity }}</span>
+                </div>
+                <span class="item-price">{{ item.dish.price * item.quantity }} FCFA</span>
+              </div>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-line">
+              <span>Sous-total</span>
+              <span>{{ total }} FCFA</span>
+            </div>
+
+            <div class="summary-line">
+              <span>Livraison</span>
+              <span>{{ deliveryFee }} FCFA</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-line total">
+              <span>Total</span>
+              <span>{{ getTotalWithDelivery() }} FCFA</span>
+            </div>
+
+            <button 
+              class="btn btn-primary submit-btn"
+              (click)="submitOrder()"
+              [disabled]="isProcessing"
+            >
+              <span *ngIf="!isProcessing">Confirmer la commande</span>
+              <span *ngIf="isProcessing">Traitement...</span>
+            </button>
+
+            <div class="secure-note">
+              🔒 Paiement 100% sécurisé
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

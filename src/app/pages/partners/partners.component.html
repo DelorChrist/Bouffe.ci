@@ -1,0 +1,214 @@
+<!-- src/app/pages/partners/partners.component.html -->
+<div class="partners-page">
+  <!-- Hero Section -->
+  <section class="partners-hero">
+    <div class="container">
+      <div class="hero-content fade-in">
+        <h1>Devenez Partenaire</h1>
+        <p>Rejoignez la communauté Bouffe.Ci et développez votre activité avec nous</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner Types -->
+  <section class="partner-types">
+    <div class="container">
+      <h2 class="section-title fade-in">Choisissez votre collaboration</h2>
+      
+      <div class="types-grid">
+        <div 
+          *ngFor="let type of partnerTypes; let i = index"
+          class="type-card"
+          [class.selected]="selectedPartnerType === type.id"
+          (click)="selectPartnerType(type.id)"
+          [style.animation-delay]="i * 0.1 + 's'"
+        >
+          <div class="type-icon">{{ type.icon }}</div>
+          <h3>{{ type.title }}</h3>
+          <p>{{ type.description }}</p>
+          
+          <div class="type-details">
+            <div class="benefits">
+              <h4>✨ Avantages</h4>
+              <ul>
+                <li *ngFor="let benefit of type.benefits">{{ benefit }}</li>
+              </ul>
+            </div>
+            
+            <div class="requirements">
+              <h4>📋 Prérequis</h4>
+              <ul>
+                <li *ngFor="let req of type.requirements">{{ req }}</li>
+              </ul>
+            </div>
+          </div>
+
+          <button class="btn btn-primary select-btn">
+            Postuler
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Application Form -->
+  <section class="application-section" *ngIf="selectedPartnerType">
+    <div class="container">
+      <div class="application-form fade-in">
+        <div class="form-header">
+          <h2>Formulaire de candidature</h2>
+          <p *ngIf="getSelectedPartner()">
+            {{ getSelectedPartner()?.icon }} Vous postulez en tant que 
+            <strong>{{ getSelectedPartner()?.title }}</strong>
+          </p>
+        </div>
+
+        <div class="success-message" *ngIf="showSuccessMessage">
+          <div class="success-icon">✓</div>
+          <h3>Candidature envoyée !</h3>
+          <p>Nous avons bien reçu votre candidature. Notre équipe vous contactera dans les plus brefs délais.</p>
+        </div>
+
+        <form (ngSubmit)="submitApplication()" *ngIf="!showSuccessMessage">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Nom complet *</label>
+              <input
+                type="text"
+                id="name"
+                [(ngModel)]="applicationForm.name"
+                name="name"
+                placeholder="Ex: Kouassi Jean"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                [(ngModel)]="applicationForm.email"
+                name="email"
+                placeholder="votre@email.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Téléphone *</label>
+              <input
+                type="tel"
+                id="phone"
+                [(ngModel)]="applicationForm.phone"
+                name="phone"
+                placeholder="+225 XX XX XX XX XX"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="address">Ville/Commune *</label>
+              <input
+                type="text"
+                id="address"
+                [(ngModel)]="applicationForm.address"
+                name="address"
+                placeholder="Ex: Cocody, Abidjan"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="experience">Expérience</label>
+            <textarea
+              id="experience"
+              [(ngModel)]="applicationForm.experience"
+              name="experience"
+              rows="3"
+              placeholder="Parlez-nous de votre expérience..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message (optionnel)</label>
+            <textarea
+              id="message"
+              [(ngModel)]="applicationForm.message"
+              name="message"
+              rows="4"
+              placeholder="Pourquoi souhaitez-vous rejoindre Bouffe.Ci ?"
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button 
+              type="button" 
+              class="btn btn-secondary"
+              (click)="selectedPartnerType = ''"
+            >
+              Annuler
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="isSubmitting"
+            >
+              <span *ngIf="!isSubmitting">Envoyer ma candidature</span>
+              <span *ngIf="isSubmitting">Envoi en cours...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Join Us -->
+  <section class="why-join">
+    <div class="container">
+      <h2 class="section-title fade-in">Pourquoi nous rejoindre ?</h2>
+      
+      <div class="reasons-grid">
+        <div class="reason-card fade-in">
+          <div class="reason-icon">📈</div>
+          <h3>Croissance garantie</h3>
+          <p>Augmentez vos revenus et développez votre activité avec notre plateforme en pleine expansion</p>
+        </div>
+
+        <div class="reason-card fade-in" style="animation-delay: 0.1s">
+          <div class="reason-icon">🤝</div>
+          <h3>Support dédié</h3>
+          <p>Une équipe à votre écoute pour vous accompagner à chaque étape de votre collaboration</p>
+        </div>
+
+        <div class="reason-card fade-in" style="animation-delay: 0.2s">
+          <div class="reason-icon">💰</div>
+          <h3>Paiements rapides</h3>
+          <p>Recevez vos paiements de manière sécurisée et rapide via Mobile Money</p>
+        </div>
+
+        <div class="reason-card fade-in" style="animation-delay: 0.3s">
+          <div class="reason-icon">📱</div>
+          <h3>Technologie simple</h3>
+          <p>Une application intuitive et facile à utiliser pour gérer votre activité</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content fade-in">
+        <h2>Prêt à commencer ?</h2>
+        <p>Rejoignez des centaines de partenaires qui font confiance à Bouffe.Ci</p>
+        <button class="btn btn-primary" (click)="selectPartnerType('chef')">
+          Postuler maintenant
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

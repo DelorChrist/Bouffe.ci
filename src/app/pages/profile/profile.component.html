@@ -1,0 +1,204 @@
+<!-- src/app/pages/profile/profile.component.html -->
+<div class="profile-page">
+  <div class="container">
+    <div class="profile-header fade-in">
+      <h1>Mon Profil</h1>
+      <p>Gérez vos informations personnelles</p>
+    </div>
+
+    <div class="profile-content">
+      <!-- Informations personnelles -->
+      <div class="profile-card fade-in">
+        <div class="card-header">
+          <h2>👤 Informations personnelles</h2>
+          <button 
+            class="btn-edit" 
+            (click)="toggleEditProfile()"
+            *ngIf="!isEditingProfile"
+          >
+            ✏️ Modifier
+          </button>
+        </div>
+
+        <div class="alert" [class.alert-success]="profileMessageType === 'success'" 
+             [class.alert-error]="profileMessageType === 'error'" 
+             *ngIf="profileMessage">
+          {{ profileMessage }}
+        </div>
+
+        <form *ngIf="!isEditingProfile" class="profile-view">
+          <div class="info-row">
+            <label>Nom complet</label>
+            <span>{{ currentUser?.name }}</span>
+          </div>
+          <div class="info-row">
+            <label>Email</label>
+            <span>{{ currentUser?.email }}</span>
+          </div>
+          <div class="info-row">
+            <label>Téléphone</label>
+            <span>{{ currentUser?.phone }}</span>
+          </div>
+          <div class="info-row">
+            <label>Adresse</label>
+            <span>{{ currentUser?.address || 'Non renseignée' }}</span>
+          </div>
+        </form>
+
+        <form *ngIf="isEditingProfile" class="profile-edit" (ngSubmit)="saveProfile()">
+          <div class="form-group">
+            <label for="name">Nom complet *</label>
+            <input
+              type="text"
+              id="name"
+              [(ngModel)]="profileForm.name"
+              name="name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="profileForm.email"
+              name="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Téléphone *</label>
+            <input
+              type="tel"
+              id="phone"
+              [(ngModel)]="profileForm.phone"
+              name="phone"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="address">Adresse complète</label>
+            <textarea
+              id="address"
+              [(ngModel)]="profileForm.address"
+              name="address"
+              rows="3"
+              placeholder="Commune, quartier, repères..."
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button 
+              type="button" 
+              class="btn btn-secondary"
+              (click)="toggleEditProfile()"
+            >
+              Annuler
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="isLoadingProfile"
+            >
+              <span *ngIf="!isLoadingProfile">Enregistrer</span>
+              <span *ngIf="isLoadingProfile">Enregistrement...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sécurité -->
+      <div class="profile-card fade-in" style="animation-delay: 0.2s">
+        <div class="card-header">
+          <h2>🔒 Sécurité</h2>
+          <button 
+            class="btn-edit" 
+            (click)="toggleEditPassword()"
+            *ngIf="!isEditingPassword"
+          >
+            🔑 Changer le mot de passe
+          </button>
+        </div>
+
+        <div class="alert" [class.alert-success]="passwordMessageType === 'success'" 
+             [class.alert-error]="passwordMessageType === 'error'" 
+             *ngIf="passwordMessage">
+          {{ passwordMessage }}
+        </div>
+
+        <div *ngIf="!isEditingPassword" class="security-info">
+          <p>Votre mot de passe a été modifié pour la dernière fois lors de votre inscription.</p>
+          <p class="security-tip">💡 Conseil : Changez votre mot de passe régulièrement pour plus de sécurité.</p>
+        </div>
+
+        <form *ngIf="isEditingPassword" class="profile-edit" (ngSubmit)="changePassword()">
+          <div class="form-group">
+            <label for="currentPassword">Mot de passe actuel *</label>
+            <input
+              type="password"
+              id="currentPassword"
+              [(ngModel)]="passwordForm.currentPassword"
+              name="currentPassword"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">Nouveau mot de passe *</label>
+            <input
+              type="password"
+              id="newPassword"
+              [(ngModel)]="passwordForm.newPassword"
+              name="newPassword"
+              placeholder="Min. 6 caractères"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirmer le nouveau mot de passe *</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              [(ngModel)]="passwordForm.confirmPassword"
+              name="confirmPassword"
+              required
+            />
+          </div>
+
+          <div class="form-actions">
+            <button 
+              type="button" 
+              class="btn btn-secondary"
+              (click)="toggleEditPassword()"
+            >
+              Annuler
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="isLoadingPassword"
+            >
+              <span *ngIf="!isLoadingPassword">Changer</span>
+              <span *ngIf="isLoadingPassword">Changement...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Zone dangereuse -->
+      <div class="profile-card danger-zone fade-in" style="animation-delay: 0.3s">
+        <div class="card-header">
+          <h2>⚠️ Zone dangereuse</h2>
+        </div>
+        <p>La suppression de votre compte est définitive et irréversible.</p>
+        <button class="btn btn-danger" (click)="deleteAccount()">
+          Supprimer mon compte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

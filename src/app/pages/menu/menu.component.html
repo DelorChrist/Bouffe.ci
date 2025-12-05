@@ -1,0 +1,99 @@
+<!-- src/app/pages/menu/menu.component.html -->
+<div class="menu-page">
+  <div class="menu-header">
+    <div class="container">
+      <h1 class="fade-in">Notre Menu</h1>
+      
+      <!-- Search Bar -->
+      <div class="search-bar fade-in">
+        <input 
+          type="text" 
+          placeholder="Rechercher un plat..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+        />
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Categories Filter -->
+    <div class="categories-filter">
+      <button 
+        *ngFor="let category of categories; let i = index"
+        [class.active]="selectedCategory === category.id"
+        (click)="selectCategory(category.id)"
+        class="category-btn"
+        [style.animation-delay]="i * 0.1 + 's'"
+      >
+        <span class="category-icon">{{ category.icon }}</span>
+        {{ category.name }}
+      </button>
+    </div>
+
+    <!-- Dishes Grid -->
+    <div class="dishes-section">
+      <div class="dishes-grid" *ngIf="filteredDishes.length > 0">
+        <div 
+          *ngFor="let dish of filteredDishes; let i = index"
+          class="dish-card"
+          [style.animation-delay]="i * 0.1 + 's'"
+          (click)="viewDish(dish.id)"
+        >
+          <!-- Favorite Button -->
+          <button 
+            class="favorite-btn"
+            [class.active]="isFavorite(dish.id)"
+            (click)="toggleFavorite(dish, $event)"
+            title="Ajouter aux favoris"
+          >
+            {{ isFavorite(dish.id) ? '❤️' : '🤍' }}
+          </button>
+
+          <div class="dish-image">
+            <img [src]="dish.image" [alt]="dish.name" />
+            <div class="dish-overlay">
+              <button class="quick-view" (click)="viewDish(dish.id)">
+                👁️ Voir détails
+              </button>
+            </div>
+          </div>
+
+          <div class="dish-info">
+            <h3>{{ dish.name }}</h3>
+            <p class="dish-description">{{ dish.description }}</p>
+            
+            <!-- Dish Meta -->
+            <div class="dish-meta" *ngIf="dish.preparationTime || dish.spicyLevel !== undefined">
+              <span class="meta-item" *ngIf="dish.preparationTime">
+                ⏱️ {{ dish.preparationTime }}
+              </span>
+              <span class="meta-item" *ngIf="dish.spicyLevel !== undefined">
+                🌶️ {{ getSpicyLevelText(dish.spicyLevel) }}
+              </span>
+            </div>
+
+            <div class="dish-footer">
+              <span class="price">{{ dish.price }} FCFA</span>
+              <button 
+                class="add-btn" 
+                (click)="addToCart(dish, $event)"
+                title="Ajouter au panier"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="filteredDishes.length === 0">
+        <div class="empty-icon">🍽️</div>
+        <h3>Aucun plat trouvé</h3>
+        <p>Essayez une autre catégorie ou recherche</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,148 @@
+<!-- src/app/pages/my-orders/my-orders.component.html -->
+<div class="my-orders-page">
+  <div class="container">
+    <h1 class="page-title fade-in">Mes Commandes</h1>
+
+    <!-- Loading -->
+    <app-loading *ngIf="isLoading" [message]="'Chargement de vos commandes...'"></app-loading>
+
+    <!-- Filters -->
+    <div class="filters-bar fade-in" *ngIf="!isLoading">
+      <button 
+        class="filter-btn"
+        [class.active]="selectedFilter === 'all'"
+        (click)="selectFilter('all')"
+      >
+        Toutes ({{ orders.length }})
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedFilter === 'active'"
+        (click)="selectFilter('active')"
+      >
+        En cours
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedFilter === 'delivered'"
+        (click)="selectFilter('delivered')"
+      >
+        Livrées
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedFilter === 'cancelled'"
+        (click)="selectFilter('cancelled')"
+      >
+        Annulées
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && filteredOrders.length === 0">
+      <div class="empty-icon">📦</div>
+      <h2>Aucune commande</h2>
+      <p *ngIf="selectedFilter === 'all'">Vous n'avez pas encore passé de commande</p>
+      <p *ngIf="selectedFilter !== 'all'">Aucune commande dans cette catégorie</p>
+      <button class="btn btn-primary" routerLink="/menu">
+        Découvrir le menu
+      </button>
+    </div>
+
+    <!-- Orders List -->
+    <div class="orders-list" *ngIf="!isLoading && filteredOrders.length > 0">
+      <div 
+        *ngFor="let order of filteredOrders; let i = index"
+        class="order-card"
+        [style.animation-delay]="i * 0.1 + 's'"
+        (click)="viewOrderDetails(order.id)"
+      >
+        <!-- Order Header -->
+        <div class="order-header">
+          <div class="order-number">
+            <span class="label">Commande</span>
+            <span class="value">#{{ order.orderNumber }}</span>
+          </div>
+          <div class="order-date">
+            {{ formatDate(order.createdAt) }}
+          </div>
+        </div>
+
+        <!-- Order Status -->
+        <div class="order-status">
+          <div class="status-badge" [style.background]="getStatusColor(order.status)">
+            <span class="status-icon">{{ getStatusIcon(order.status) }}</span>
+            <span class="status-text">{{ getStatusMessage(order.status) }}</span>
+          </div>
+          
+          <div class="progress-bar" *ngIf="order.status !== 'cancelled' && order.status !== 'delivered'">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage(order.status)"></div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="order-items">
+          <div class="items-preview">
+            <span *ngFor="let item of order.items.slice(0, 3)" class="item-badge">
+              {{ item.dish.name }} x{{ item.quantity }}
+            </span>
+            <span *ngIf="order.items.length > 3" class="more-items">
+              +{{ order.items.length - 3 }} autre(s)
+            </span>
+          </div>
+        </div>
+
+        <!-- Order Footer -->
+        <div class="order-footer">
+          <div class="order-total">
+            <span class="total-label">Total</span>
+            <span class="total-value">{{ order.total }} FCFA</span>
+          </div>
+
+          <div class="order-actions">
+            <button 
+              class="btn-action btn-cancel"
+              *ngIf="canCancelOrder(order)"
+              (click)="cancelOrder(order.id, $event)"
+            >
+              Annuler
+            </button>
+            <button 
+              class="btn-action btn-reorder"
+              *ngIf="order.status === 'delivered'"
+              (click)="reorder(order, $event)"
+            >
+              Recommander
+            </button>
+            <button class="btn-action btn-details">
+              Voir détails →
+            </button>
+          </div>
+        </div>
+
+        <!-- Timeline Steps (for active orders) -->
+        <div class="order-timeline" *ngIf="['confirmed', 'preparing', 'ready', 'delivering'].includes(order.status)">
+          <div class="timeline-step" [class.completed]="['confirmed', 'preparing', 'ready', 'delivering', 'delivered'].includes(order.status)">
+            <div class="step-icon">✓</div>
+            <div class="step-label">Confirmée</div>
+          </div>
+          <div class="timeline-connector" [class.active]="['preparing', 'ready', 'delivering', 'delivered'].includes(order.status)"></div>
+          <div class="timeline-step" [class.completed]="['preparing', 'ready', 'delivering', 'delivered'].includes(order.status)">
+            <div class="step-icon">{{ ['preparing', 'ready', 'delivering', 'delivered'].includes(order.status) ? '✓' : '👨‍🍳' }}</div>
+            <div class="step-label">En préparation</div>
+          </div>
+          <div class="timeline-connector" [class.active]="['ready', 'delivering', 'delivered'].includes(order.status)"></div>
+          <div class="timeline-step" [class.completed]="['ready', 'delivering', 'delivered'].includes(order.status)">
+            <div class="step-icon">{{ ['ready', 'delivering', 'delivered'].includes(order.status) ? '✓' : '📦' }}</div>
+            <div class="step-label">Prête</div>
+          </div>
+          <div class="timeline-connector" [class.active]="['delivering', 'delivered'].includes(order.status)"></div>
+          <div class="timeline-step" [class.completed]="['delivering', 'delivered'].includes(order.status)">
+            <div class="step-icon">{{ order.status === 'delivered' ? '✓' : '🚚' }}</div>
+            <div class="step-label">En livraison</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

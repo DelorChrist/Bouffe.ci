@@ -1,0 +1,97 @@
+<!-- src/app/pages/home/home.component.html -->
+<div class="home">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content fade-in">
+      <h1>Plats africains<br/>faits maison</h1>
+      <p>Savourez l'authenticité de la cuisine ivoirienne traditionnelle</p>
+      <button class="btn btn-primary" (click)="goToMenu()">
+        Commander maintenant
+      </button>
+    </div>
+    <div class="hero-image scale-in">
+      <div class="dish-circle">
+        <img src="assets/images/plat-banniere.jpeg" alt="Plat traditionnel" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories">
+    <div class="container">
+      <h2 class="section-title fade-in">Catégories</h2>
+      <div class="categories-grid">
+        <div 
+          *ngFor="let category of categories; let i = index"
+          class="category-card"
+          [style.animation-delay]="i * 0.1 + 's'"
+          (click)="goToMenu(category.id)"
+        >
+          <div class="category-icon" [style.background]="category.color">
+            <span>{{ category.icon }}</span>
+          </div>
+          <h3>{{ category.name }}</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Dishes Section -->
+  <section class="popular-dishes">
+    <div class="container">
+      <h2 class="section-title fade-in">Plats populaires</h2>
+      <div class="dishes-grid">
+        <div 
+          *ngFor="let dish of popularDishes; let i = index"
+          class="dish-card"
+          [style.animation-delay]="i * 0.1 + 's'"
+        >
+          <div class="dish-image">
+            <img [src]="dish.image" [alt]="dish.name" />
+          </div>
+          <div class="dish-info">
+            <h3>{{ dish.name }}</h3>
+            <p class="dish-description">{{ dish.description }}</p>
+            <div class="dish-footer">
+              <span class="price">{{ dish.price }} FCFA</span>
+              <button 
+                class="add-btn" 
+                (click)="addToCart(dish, $event)"
+              >
+                Ajouter
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="view-all">
+        <button class="btn btn-secondary" (click)="goToMenu()">
+          Voir tout le menu
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature fade-in">
+          <div class="feature-icon">🚚</div>
+          <h3>Livraison rapide</h3>
+          <p>À votre porte en moins d'une heure</p>
+        </div>
+        <div class="feature fade-in" style="animation-delay: 0.2s">
+          <div class="feature-icon">💳</div>
+          <h3>Paiement sécurisé</h3>
+          <p>Mobile money et carte bancaire</p>
+        </div>
+        <div class="feature fade-in" style="animation-delay: 0.4s">
+          <div class="feature-icon">⭐</div>
+          <h3>Fait maison</h3>
+          <p>Recettes authentiques et traditionnelles</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,78 @@
+<!-- src/app/pages/registration-pending/registration-pending.component.html -->
+<div class="pending-page">
+  <div class="pending-container">
+    <div class="pending-card fade-in">
+      <div class="pending-icon">⏳</div>
+      
+      <h1>Compte en attente de validation</h1>
+      
+      <div class="user-info" *ngIf="currentUser">
+        <div class="user-avatar">{{ currentUser.name.charAt(0) }}</div>
+        <h2>{{ currentUser.name }}</h2>
+        <p class="user-role">
+          {{ currentUser.role === 'chef' ? '👨‍🍳 Cuisinier' : '🏍️ Livreur' }}
+        </p>
+      </div>
+
+      <div class="pending-message">
+        <p>
+          Votre inscription a bien été reçue et est actuellement en cours de vérification 
+          par notre équipe.
+        </p>
+        
+        <div class="info-box">
+          <h3>📋 Que se passe-t-il maintenant ?</h3>
+          <ul>
+            <li *ngIf="currentUser?.role === 'chef'">
+              Notre équipe vérifie vos spécialités et votre expérience
+            </li>
+            <li *ngIf="currentUser?.role === 'livreur'">
+              Notre équipe vérifie vos documents (pièce d'identité et permis de conduire)
+            </li>
+            <li>
+              Un administrateur examinera votre candidature dans les prochaines 24-48 heures
+            </li>
+            <li>
+              Vous recevrez un email dès que votre compte sera validé
+            </li>
+          </ul>
+        </div>
+
+        <div class="info-box success">
+          <h3>✅ Prochaines étapes</h3>
+          <p *ngIf="currentUser?.role === 'chef'">
+            Une fois votre compte validé, vous pourrez accéder à votre dashboard 
+            pour proposer vos plats et gérer vos commandes.
+          </p>
+          <p *ngIf="currentUser?.role === 'livreur'">
+            Une fois votre compte validé, vous pourrez accéder à votre dashboard 
+            pour voir les livraisons disponibles et commencer à gagner de l'argent.
+          </p>
+        </div>
+
+        <div class="info-box warning">
+          <h3>⚠️ Important</h3>
+          <p>
+            Si votre candidature est rejetée, vous en serez informé par email 
+            avec les raisons du refus.
+          </p>
+        </div>
+      </div>
+
+      <div class="pending-actions">
+        <button class="btn btn-secondary" (click)="goHome()">
+          Retour à l'accueil
+        </button>
+        <button class="btn btn-outline" (click)="logout()">
+          Se déconnecter
+        </button>
+      </div>
+
+      <div class="contact-info">
+        <p>Des questions ? Contactez-nous :</p>
+        <a href="mailto:contact@bouffe.ci">contact&#64;bouffe.ci</a>
+        <a href="tel:+2250501589009">+225 05 01 58 90 09</a>
+      </div>
+    </div>
+  </div>
+</div>

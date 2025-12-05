@@ -1,0 +1,71 @@
+<!-- src/app/pages/favorites/favorites.component.html -->
+<div class="favorites-page">
+  <div class="container">
+    <h1 class="page-title fade-in">Mes Favoris</h1>
+    
+    <!-- Loading -->
+    <app-loading *ngIf="isLoading" [message]="'Chargement des favoris...'"></app-loading>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && favoriteDishes.length === 0">
+      <div class="empty-icon">❤️</div>
+      <h2>Aucun favori pour le moment</h2>
+      <p>Ajoutez vos plats préférés à vos favoris pour les retrouver facilement</p>
+      <button class="btn btn-primary" (click)="goToMenu()">
+        Découvrir le menu
+      </button>
+    </div>
+
+    <!-- Favorites Grid -->
+    <div class="favorites-grid" *ngIf="!isLoading && favoriteDishes.length > 0">
+      <div 
+        *ngFor="let dish of favoriteDishes; let i = index"
+        class="dish-card"
+        [style.animation-delay]="i * 0.1 + 's'"
+        (click)="viewDish(dish.id)"
+      >
+        <button 
+          class="favorite-btn active"
+          (click)="removeFavorite(dish, $event)"
+          title="Retirer des favoris"
+        >
+          ❤️
+        </button>
+
+        <div class="dish-image">
+          <img [src]="dish.image" [alt]="dish.name" />
+          <div class="dish-overlay">
+            <button class="quick-view" (click)="viewDish(dish.id)">
+              👁️ Voir détails
+            </button>
+          </div>
+        </div>
+
+        <div class="dish-info">
+          <h3>{{ dish.name }}</h3>
+          <p class="dish-description">{{ dish.description }}</p>
+          
+          <div class="dish-meta">
+            <span class="meta-item" *ngIf="dish.preparationTime">
+              ⏱️ {{ dish.preparationTime }}
+            </span>
+            <span class="meta-item" *ngIf="dish.spicyLevel">
+              🌶️ {{ getSpicyLevelText(dish.spicyLevel) }}
+            </span>
+          </div>
+
+          <div class="dish-footer">
+            <span class="price">{{ dish.price }} FCFA</span>
+            <button 
+              class="add-btn" 
+              (click)="addToCart(dish, $event)"
+              title="Ajouter au panier"
+            >
+              + Ajouter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

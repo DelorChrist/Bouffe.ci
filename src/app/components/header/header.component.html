@@ -1,0 +1,244 @@
+<!-- src/app/components/header/header.component.html -->
+<header [class.scrolled]="isScrolled">
+  <div class="container">
+    <nav class="navbar">
+      <!-- Menu Burger (Mobile) -->
+      <button class="menu-toggle" (click)="toggleMenu()" [class.active]="isMenuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Logo -->
+      <a routerLink="/" class="logo">
+        <h1>Bouffe<span>.Ci</span></h1>
+      </a>
+
+      <!-- Navigation Desktop -->
+      <div class="nav-menu desktop-only">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          Accueil
+        </a>
+        <a routerLink="/menu" routerLinkActive="active">
+          Menu
+        </a>
+        <a routerLink="/about" routerLinkActive="active">
+          À propos
+        </a>
+        <a routerLink="/partners" routerLinkActive="active">
+          Devenez partenaire
+        </a>
+      </div>
+
+      <!-- Actions Desktop -->
+      <div class="desktop-actions">
+        <button class="cart-btn" (click)="navigateToCart()">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        </button>
+
+        <div class="user-menu" *ngIf="currentUser; else loginButton">
+          <button class="user-btn" (click)="toggleUserMenu()">
+            <span class="user-avatar">{{ currentUser.name.charAt(0).toUpperCase() }}</span>
+            <span class="user-name">{{ currentUser.name.split(' ')[0] }}</span>
+          </button>
+          
+          <div class="dropdown-menu" *ngIf="isUserMenuOpen">
+            <div class="dropdown-header">
+              <strong>{{ currentUser.name }}</strong>
+              <small>{{ currentUser.email }}</small>
+            </div>
+
+            <!-- Lien Mes Commandes pour les clients -->
+            <a 
+              routerLink="/my-orders" 
+              class="dropdown-item" 
+              (click)="closeUserMenu()"
+              *ngIf="currentUser.role === 'user'"
+            >
+              <span class="item-icon">📦</span>
+              Mes commandes
+            </a>
+
+            <!-- Lien Dashboard pour admin/chef/livreur -->
+            <a 
+              [routerLink]="getDashboardLink()" 
+              class="dropdown-item" 
+              (click)="closeUserMenu()"
+              *ngIf="currentUser.role !== 'user'"
+            >
+              <span class="item-icon">📊</span>
+              Dashboard
+            </a>
+
+            <a routerLink="/profile" class="dropdown-item" (click)="closeUserMenu()">
+              <span class="item-icon">👤</span>
+              Mon profil
+            </a>
+
+            <button class="dropdown-item logout" (click)="logout()">
+              <span class="item-icon">🚪</span>
+              Déconnexion
+            </button>
+          </div>
+        </div>
+
+        <ng-template #loginButton>
+          <button class="btn btn-primary" routerLink="/login">
+            Connexion
+          </button>
+        </ng-template>
+      </div>
+
+      <!-- Spacer for mobile -->
+      <div class="mobile-spacer"></div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-overlay" [class.active]="isMenuOpen" (click)="toggleMenu()"></div>
+
+  <!-- Mobile Menu Sidebar -->
+  <div class="mobile-sidebar" [class.active]="isMenuOpen">
+    <div class="sidebar-header">
+      <h2>Menu</h2>
+      <button class="close-btn" (click)="toggleMenu()">×</button>
+    </div>
+
+    <div class="sidebar-content">
+      <!-- User Section (si connecté) -->
+      <div class="sidebar-section" *ngIf="currentUser">
+        <div class="sidebar-user-info">
+          <div class="user-avatar-large">{{ currentUser.name.charAt(0).toUpperCase() }}</div>
+          <div class="user-details">
+            <strong>{{ currentUser.name }}</strong>
+            <small>{{ currentUser.email }}</small>
+          </div>
+        </div>
+
+        <!-- Mes Commandes pour les clients -->
+        <a 
+          routerLink="/my-orders" 
+          (click)="toggleMenu()" 
+          class="sidebar-link"
+          *ngIf="currentUser.role === 'user'"
+        >
+          <span class="link-icon">📦</span>
+          Mes commandes
+        </a>
+
+        <!-- Dashboard pour admin/chef/livreur -->
+        <a 
+          [routerLink]="getDashboardLink()" 
+          (click)="toggleMenu()" 
+          class="sidebar-link"
+          *ngIf="currentUser.role !== 'user'"
+        >
+          <span class="link-icon">📊</span>
+          Dashboard
+        </a>
+
+        <a routerLink="/profile" (click)="toggleMenu()" class="sidebar-link">
+          <span class="link-icon">👤</span>
+          Mon profil
+        </a>
+
+        <button class="sidebar-link logout-link" (click)="logout()">
+          <span class="link-icon">🚪</span>
+          Déconnexion
+        </button>
+      </div>
+
+      <!-- Auth Section (si non connecté) -->
+      <div class="sidebar-section auth-section" *ngIf="!currentUser">
+        <button class="sidebar-btn btn-primary" (click)="navigateToLogin()">
+          Connexion
+        </button>
+        <button class="sidebar-btn btn-secondary" routerLink="/register" (click)="toggleMenu()">
+          Créer un compte
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="sidebar-section">
+        <h3>Navigation</h3>
+        <a routerLink="/menu" routerLinkActive="active" (click)="toggleMenu()" class="sidebar-link">
+          <span class="link-icon">🍽️</span>
+          Voir le menu
+        </a>
+        <a routerLink="/about" routerLinkActive="active" (click)="toggleMenu()" class="sidebar-link">
+          <span class="link-icon">ℹ️</span>
+          À propos
+        </a>
+      </div>
+
+      <!-- Partners Section -->
+      <div class="sidebar-section partners-section">
+        <h3>Devenez partenaire</h3>
+        <a routerLink="/partners" (click)="toggleMenu()" class="sidebar-link partner-link">
+          <span class="link-icon">👨‍🍳</span>
+          Cuisinier
+        </a>
+        <a routerLink="/partners" (click)="toggleMenu()" class="sidebar-link partner-link">
+          <span class="link-icon">🏍️</span>
+          Livreur
+        </a>
+        <a routerLink="/partners" (click)="toggleMenu()" class="sidebar-link partner-link">
+          <span class="link-icon">🪀</span>
+          Restaurant
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="bottom-nav">
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="bottom-nav-item">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Accueil</span>
+  </a>
+
+  <a routerLink="/menu" routerLinkActive="active" class="bottom-nav-item">
+    <span class="nav-icon">🍽️</span>
+    <span class="nav-label">Menu</span>
+  </a>
+
+  <!-- Mes Commandes pour les clients connectés -->
+  <a 
+    routerLink="/my-orders" 
+    routerLinkActive="active" 
+    class="bottom-nav-item"
+    *ngIf="currentUser && currentUser.role === 'user'"
+  >
+    <span class="nav-icon">📦</span>
+    <span class="nav-label">Commandes</span>
+  </a>
+
+  <!-- Panier si non connecté ou client -->
+  <a 
+    routerLink="/cart" 
+    routerLinkActive="active" 
+    class="bottom-nav-item cart-item"
+    *ngIf="!currentUser || currentUser.role === 'user'"
+  >
+    <span class="nav-icon">🛒</span>
+    <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+    <span class="nav-label">Panier</span>
+  </a>
+
+  <a routerLink="/favorites" routerLinkActive="active" class="bottom-nav-item">
+    <span class="nav-icon">❤️</span>
+    <span class="nav-label">Favoris</span>
+  </a>
+
+  <a *ngIf="currentUser" routerLink="/profile" routerLinkActive="active" class="bottom-nav-item">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">Compte</span>
+  </a>
+
+  <a *ngIf="!currentUser" routerLink="/login" routerLinkActive="active" class="bottom-nav-item">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">Connexion</span>
+  </a>
+</nav>

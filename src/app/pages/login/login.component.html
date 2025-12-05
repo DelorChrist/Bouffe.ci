@@ -1,0 +1,63 @@
+<!-- src/app/pages/login/login.component.html -->
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card fade-in">
+      <div class="auth-header">
+        <h1>Connexion</h1>
+        <p>Connectez-vous pour passer votre commande</p>
+      </div>
+
+      <div class="alert alert-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="credentials.email"
+            name="email"
+            placeholder="votre@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="credentials.password"
+            name="password"
+            placeholder="••••••••"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-full"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="!isLoading">Se connecter</span>
+          <span *ngIf="isLoading">Connexion...</span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Pas encore de compte ?</p>
+        <button class="btn btn-secondary" (click)="goToRegister()">
+          Créer un compte
+        </button>
+      </div>
+
+      <div class="back-home">
+        <a routerLink="/">← Retour à l'accueil</a>
+      </div>
+    </div>
+  </div>
+</div>

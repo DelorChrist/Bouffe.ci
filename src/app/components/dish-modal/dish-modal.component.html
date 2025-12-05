@@ -1,0 +1,65 @@
+<!-- src/app/components/dish-modal/dish-modal.component.html -->
+<div class="modal-backdrop" *ngIf="isOpen && dish" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <button class="modal-close" (click)="onClose()">×</button>
+    
+    <div class="modal-image">
+      <img [src]="dish.image" [alt]="dish.name" />
+    </div>
+
+    <div class="modal-body">
+      <h2>{{ dish.name }}</h2>
+      <p class="dish-name-en">{{ dish.nameEn }}</p>
+      <p class="dish-description">{{ dish.description }}</p>
+      
+      <div class="price-section">
+        <span class="base-price">{{ dish.price }} FCFA</span>
+      </div>
+
+      <!-- Sauce Options -->
+      <div class="options-section" *ngIf="sauceOptions.length > 0">
+        <h3>Sauce (optionnel)</h3>
+        <div class="options-grid">
+          <button
+            *ngFor="let option of sauceOptions"
+            class="option-btn"
+            [class.selected]="isOptionSelected(option.id)"
+            (click)="toggleOption(option.id)"
+          >
+            <span class="option-name">{{ option.name }}</span>
+            <span class="option-price" *ngIf="option.price > 0">+{{ option.price }} FCFA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Side Options -->
+      <div class="options-section" *ngIf="sideOptions.length > 0">
+        <h3>Accompagnement (optionnel)</h3>
+        <div class="options-grid">
+          <button
+            *ngFor="let option of sideOptions"
+            class="option-btn"
+            [class.selected]="isOptionSelected(option.id)"
+            (click)="toggleOption(option.id)"
+          >
+            <span class="option-name">{{ option.name }}</span>
+            <span class="option-price">+{{ option.price }} FCFA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quantity and Add to Cart -->
+      <div class="modal-footer">
+        <div class="quantity-selector">
+          <button class="qty-btn" (click)="decrementQuantity()">−</button>
+          <span class="quantity">{{ quantity }}</span>
+          <button class="qty-btn" (click)="incrementQuantity()">+</button>
+        </div>
+
+        <button class="btn btn-primary add-cart-btn" (click)="addToCart()">
+          Ajouter - {{ getTotalPrice() }} FCFA
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

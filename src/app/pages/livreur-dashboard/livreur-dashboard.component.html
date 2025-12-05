@@ -1,0 +1,202 @@
+<!-- src/app/pages/livreur-dashboard/livreur-dashboard.component.html -->
+<div class="livreur-dashboard">
+  <div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <h2>🏍️ Livreur</h2>
+        <p>{{ currentUser?.name }}</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'overview'"
+          (click)="changeSection('overview')"
+        >
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Tableau de bord</span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'deliveries'"
+          (click)="changeSection('deliveries')"
+        >
+          <span class="nav-icon">📦</span>
+          <span class="nav-label">Livraisons en cours</span>
+          <span class="badge" *ngIf="assignedOrders.length > 0">{{ assignedOrders.length }}</span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'history'"
+          (click)="changeSection('history')"
+        >
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Historique</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary" routerLink="/">
+          ← Retour au site
+        </button>
+      </div>
+    </aside>
+
+    <main class="dashboard-content">
+      
+      <!-- Overview -->
+      <div class="content-section" *ngIf="currentSection === 'overview'">
+        <h1 class="section-title">📊 Tableau de bord</h1>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.todayDeliveries }}</div>
+              <div class="stat-label">Livraisons aujourd'hui</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalDeliveries }}</div>
+              <div class="stat-label">Total livraisons</div>
+            </div>
+          </div>
+
+          <div class="stat-card highlight">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalEarnings }} FCFA</div>
+              <div class="stat-label">Revenus totaux</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.averageRating }}/5</div>
+              <div class="stat-label">Note moyenne</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="welcome-section">
+          <h2>👋 Bienvenue {{ currentUser?.name }} !</h2>
+          <p>Véhicule: {{ currentUser?.vehicleType }}</p>
+          <p>Vous gagnez 500 FCFA par livraison effectuée.</p>
+          <button class="btn btn-primary" (click)="changeSection('deliveries')" *ngIf="assignedOrders.length > 0">
+            Voir mes livraisons ({{ assignedOrders.length }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Deliveries -->
+      <div class="content-section" *ngIf="currentSection === 'deliveries'">
+        <h1 class="section-title">📦 Livraisons en cours ({{ assignedOrders.length }})</h1>
+
+        <div class="orders-list" *ngIf="assignedOrders.length > 0">
+          <div class="order-card" *ngFor="let order of assignedOrders">
+            <div class="order-header">
+              <span class="order-number">#{{ order.orderNumber }}</span>
+              <span class="order-status" [style.background]="ordersService.getStatusColor(order.status)">
+                {{ getStatusMessage(order.status) }}
+              </span>
+            </div>
+
+            <div class="order-details">
+              <div class="detail-row">
+                <strong>👤 Client:</strong>
+                <span>{{ order.customerName }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>📞 Téléphone:</strong>
+                <span>{{ order.customerPhone }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>📍 Adresse:</strong>
+                <span>{{ order.customerAddress }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>💰 Total:</strong>
+                <span class="amount">{{ order.total }} FCFA</span>
+              </div>
+              <div class="detail-row">
+                <strong>🍽️ Articles:</strong>
+                <span>{{ order.items.length }} plat(s)</span>
+              </div>
+            </div>
+
+            <div class="order-items-preview">
+              <p><strong>Contenu de la commande:</strong></p>
+              <ul>
+                <li *ngFor="let item of order.items">
+                  {{ item.dish.name }} x{{ item.quantity }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="order-actions">
+              <button 
+                class="btn btn-primary btn-full"
+                *ngIf="order.status === 'ready'"
+                (click)="startDelivery(order.id)"
+              >
+                🚚 Commencer la livraison
+              </button>
+
+              <button 
+                class="btn btn-success btn-full"
+                *ngIf="order.status === 'delivering'"
+                (click)="completeDelivery(order.id)"
+              >
+                ✓ Confirmer la livraison (+500 FCFA)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="assignedOrders.length === 0">
+          <div class="empty-icon">📦</div>
+          <h2>Aucune livraison en cours</h2>
+          <p>Les nouvelles livraisons apparaîtront ici dès qu'elles vous seront assignées</p>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="content-section" *ngIf="currentSection === 'history'">
+        <h1 class="section-title">📋 Historique des livraisons ({{ completedOrders.length }})</h1>
+
+        <div class="history-list" *ngIf="completedOrders.length > 0">
+          <div class="history-item" *ngFor="let order of completedOrders">
+            <div class="history-info">
+              <div class="history-number">
+                <span class="order-number">#{{ order.orderNumber }}</span>
+                <span class="delivery-date">{{ formatDate(order.deliveryTime!) }}</span>
+              </div>
+            </div>
+            <div class="history-details">
+              <div class="customer-info">
+                <p class="customer-name">{{ order.customerName }}</p>
+                <p class="customer-address">{{ order.customerAddress }}</p>
+              </div>
+              <div class="earnings-badge">
+                <span class="earnings">+500 FCFA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="completedOrders.length === 0">
+          <div class="empty-icon">📋</div>
+          <h2>Aucune livraison effectuée</h2>
+          <p>Votre historique de livraisons apparaîtra ici</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>

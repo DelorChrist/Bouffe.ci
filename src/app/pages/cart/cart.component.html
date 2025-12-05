@@ -1,0 +1,102 @@
+<!-- src/app/pages/cart/cart.component.html -->
+<div class="cart-page">
+  <div class="container">
+    <h1 class="page-title fade-in">Votre Panier</h1>
+
+    <!-- Empty Cart -->
+    <div class="empty-cart" *ngIf="cartItems.length === 0">
+      <div class="empty-icon">🛒</div>
+      <h2>Votre panier est vide</h2>
+      <p>Ajoutez des plats délicieux pour commencer votre commande</p>
+      <button class="btn btn-primary" (click)="continueShopping()">
+        Découvrir le menu
+      </button>
+    </div>
+
+    <!-- Cart with Items -->
+    <div class="cart-content" *ngIf="cartItems.length > 0">
+      <div class="cart-items">
+        <div 
+          *ngFor="let item of cartItems; let i = index"
+          class="cart-item"
+          [style.animation-delay]="i * 0.1 + 's'"
+        >
+          <div class="item-image">
+            <img [src]="item.dish.image" [alt]="item.dish.name" />
+          </div>
+          
+          <div class="item-details">
+            <h3>{{ item.dish.name }}</h3>
+            <p class="item-description">{{ item.dish.description }}</p>
+            <span class="item-price">{{ item.dish.price }} FCFA</span>
+          </div>
+
+          <div class="item-actions">
+            <div class="quantity-control">
+              <button 
+                class="qty-btn"
+                (click)="updateQuantity(item.dish.id, item.quantity - 1)"
+              >
+                −
+              </button>
+              <span class="quantity">{{ item.quantity }}</span>
+              <button 
+                class="qty-btn"
+                (click)="updateQuantity(item.dish.id, item.quantity + 1)"
+              >
+                +
+              </button>
+            </div>
+            
+            <button 
+              class="remove-btn"
+              (click)="removeItem(item.dish.id)"
+            >
+              🗑️
+            </button>
+          </div>
+
+          <div class="item-total">
+            {{ item.dish.price * item.quantity }} FCFA
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <h2>Résumé</h2>
+        
+        <div class="summary-line">
+          <span>Sous-total</span>
+          <span>{{ total }} FCFA</span>
+        </div>
+        
+        <div class="summary-line">
+          <span>Livraison</span>
+          <span>{{ deliveryFee }} FCFA</span>
+        </div>
+        
+        <div class="summary-divider"></div>
+        
+        <div class="summary-line total">
+          <span>Total</span>
+          <span>{{ getTotalWithDelivery() }} FCFA</span>
+        </div>
+
+        <button 
+          class="btn btn-primary checkout-btn"
+          (click)="proceedToCheckout()"
+        >
+          Commander
+        </button>
+
+        <button 
+          class="btn btn-secondary continue-btn"
+          (click)="continueShopping()"
+        >
+          Continuer mes achats
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

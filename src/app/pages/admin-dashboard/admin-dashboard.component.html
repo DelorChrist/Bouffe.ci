@@ -1,0 +1,312 @@
+<div class="admin-dashboard">
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <h2>👑 Admin</h2>
+        <p>Dashboard</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'overview'"
+          (click)="changeSection('overview')"
+        >
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Vue d'ensemble</span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'users'"
+          (click)="changeSection('users')"
+        >
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Utilisateurs</span>
+          <span class="badge" *ngIf="pendingChefs.length + pendingLivreurs.length > 0">
+            {{ pendingChefs.length + pendingLivreurs.length }}
+          </span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'dishes'"
+          (click)="changeSection('dishes')"
+        >
+          <span class="nav-icon">🍽️</span>
+          <span class="nav-label">Plats à valider</span>
+          <span class="badge" *ngIf="pendingDishes.length > 0">
+            {{ pendingDishes.length }}
+          </span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'orders'"
+          (click)="changeSection('orders')"
+        >
+          <span class="nav-icon">📦</span>
+          <span class="nav-label">Commandes</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary" routerLink="/">
+          ← Retour au site
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+      
+      <!-- Overview Section -->
+      <div class="content-section" *ngIf="currentSection === 'overview'">
+        <h1 class="section-title">📊 Vue d'ensemble</h1>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalUsers }}</div>
+              <div class="stat-label">Clients</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">👨‍🍳</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalChefs }}</div>
+              <div class="stat-label">Cuisiniers</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🏍️</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalLivreurs }}</div>
+              <div class="stat-label">Livreurs</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalOrders }}</div>
+              <div class="stat-label">Commandes</div>
+            </div>
+          </div>
+
+          <div class="stat-card highlight">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalRevenue }} FCFA</div>
+              <div class="stat-label">Revenus totaux</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.todayOrders }}</div>
+              <div class="stat-label">Commandes aujourd'hui</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alerts-section">
+          <h2>⚠️ Actions requises</h2>
+          <div class="alert-cards">
+            <div class="alert-card" *ngIf="pendingChefs.length > 0">
+              <span class="alert-icon">👨‍🍳</span>
+              <span class="alert-text">{{ pendingChefs.length }} cuisinier(s) en attente de validation</span>
+              <button class="btn-sm" (click)="changeSection('users')">Voir</button>
+            </div>
+
+            <div class="alert-card" *ngIf="pendingLivreurs.length > 0">
+              <span class="alert-icon">🏍️</span>
+              <span class="alert-text">{{ pendingLivreurs.length }} livreur(s) en attente de validation</span>
+              <button class="btn-sm" (click)="changeSection('users')">Voir</button>
+            </div>
+
+            <div class="alert-card" *ngIf="pendingDishes.length > 0">
+              <span class="alert-icon">🍽️</span>
+              <span class="alert-text">{{ pendingDishes.length }} plat(s) à valider</span>
+              <button class="btn-sm" (click)="changeSection('dishes')">Voir</button>
+            </div>
+
+            <div class="alert-card" *ngIf="stats.pendingOrders > 0">
+              <span class="alert-icon">📦</span>
+              <span class="alert-text">{{ stats.pendingOrders }} commande(s) en attente</span>
+              <button class="btn-sm" (click)="changeSection('orders')">Voir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Section -->
+      <div class="content-section" *ngIf="currentSection === 'users'">
+        <h1 class="section-title">👥 Gestion des utilisateurs</h1>
+
+        <!-- Pending Chefs -->
+        <div class="subsection" *ngIf="pendingChefs.length > 0">
+          <h2>👨‍🍳 Cuisiniers en attente ({{ pendingChefs.length }})</h2>
+          <div class="users-grid">
+            <div class="user-card" *ngFor="let chef of pendingChefs">
+              <div class="user-header">
+                <div class="user-avatar">{{ chef.name.charAt(0) }}</div>
+                <div class="user-info">
+                  <h3>{{ chef.name }}</h3>
+                  <p>{{ chef.email }}</p>
+                  <p>{{ chef.phone }}</p>
+                </div>
+              </div>
+              <div class="user-details">
+                <p><strong>Spécialités:</strong></p>
+                <div class="tags">
+                  <span class="tag" *ngFor="let spec of chef.specialties">{{ spec }}</span>
+                </div>
+                <p><strong>Expérience:</strong> {{ chef.experience }}</p>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn-success" (click)="approveUser(chef.id)">
+                  ✓ Approuver
+                </button>
+                <button class="btn btn-danger" (click)="rejectUser(chef.id)">
+                  ✕ Rejeter
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Livreurs -->
+        <div class="subsection" *ngIf="pendingLivreurs.length > 0">
+          <h2>🏍️ Livreurs en attente ({{ pendingLivreurs.length }})</h2>
+          <div class="users-grid">
+            <div class="user-card" *ngFor="let livreur of pendingLivreurs">
+              <div class="user-header">
+                <div class="user-avatar">{{ livreur.name.charAt(0) }}</div>
+                <div class="user-info">
+                  <h3>{{ livreur.name }}</h3>
+                  <p>{{ livreur.email }}</p>
+                  <p>{{ livreur.phone }}</p>
+                </div>
+              </div>
+              <div class="user-details">
+                <p><strong>Véhicule:</strong> {{ livreur.vehicleType }}</p>
+                <p><strong>Documents:</strong></p>
+                <div class="documents-preview">
+                  <div class="doc-item" *ngIf="livreur.documents?.idCardFront">
+                    <img [src]="getDocument(livreur.documents?.idCardFront)" alt="CNI Recto" />
+                    <span>CNI Recto</span>
+                  </div>
+                  <div class="doc-item" *ngIf="livreur.documents?.idCardBack">
+                    <img [src]="getDocument(livreur.documents?.idCardBack)" alt="CNI Verso" />
+                    <span>CNI Verso</span>
+                  </div>
+                  <div class="doc-item" *ngIf="livreur.documents?.drivingLicenseFront">
+                    <img [src]="getDocument(livreur.documents?.drivingLicenseFront)" alt="Permis Recto" />
+                    <span>Permis Recto</span>
+                  </div>
+                  <div class="doc-item" *ngIf="livreur.documents?.drivingLicenseBack">
+                    <img [src]="getDocument(livreur.documents?.drivingLicenseBack)" alt="Permis Verso" />
+                    <span>Permis Verso</span>
+                  </div>
+                </div>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn-success" (click)="approveUser(livreur.id)">
+                  ✓ Approuver
+                </button>
+                <button class="btn btn-danger" (click)="rejectUser(livreur.id)">
+                  ✕ Rejeter
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="pendingChefs.length === 0 && pendingLivreurs.length === 0">
+          <p>✅ Aucun utilisateur en attente de validation</p>
+        </div>
+      </div>
+
+      <!-- Dishes Section -->
+      <div class="content-section" *ngIf="currentSection === 'dishes'">
+        <h1 class="section-title">🍽️ Plats à valider ({{ pendingDishes.length }})</h1>
+
+        <div class="dishes-grid" *ngIf="pendingDishes.length > 0">
+          <div class="dish-card" *ngFor="let dish of pendingDishes">
+            <div class="dish-image">
+              <img [src]="getDocument(dish.image)" [alt]="dish.name" />
+            </div>
+            <div class="dish-info">
+              <h3>{{ dish.name }}</h3>
+              <p class="dish-chef">Par: {{ dish.chefName }}</p>
+              <p class="dish-description">{{ dish.description }}</p>
+              <p class="dish-price">{{ dish.price }} FCFA</p>
+              <p class="dish-category">Catégorie: {{ dish.category }}</p>
+            </div>
+            <div class="dish-actions">
+              <button class="btn btn-success" (click)="approveDish(dish.id)">
+                ✓ Approuver
+              </button>
+              <button class="btn btn-danger" (click)="viewDish(dish)">
+                ✕ Rejeter
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="pendingDishes.length === 0">
+          <p>✅ Aucun plat en attente de validation</p>
+        </div>
+      </div>
+
+      <!-- Orders Section -->
+      <div class="content-section" *ngIf="currentSection === 'orders'">
+        <h1 class="section-title">📦 Commandes actives ({{ activeOrders.length }})</h1>
+
+        <div class="orders-list" *ngIf="activeOrders.length > 0">
+          <div class="order-item" *ngFor="let order of activeOrders">
+            <div class="order-header">
+              <span class="order-number">#{{ order.orderNumber }}</span>
+              <span class="order-status" [style.background]="ordersService.getStatusColor(order.status)">
+                {{ ordersService.getStatusMessage(order.status) }}
+              </span>
+            </div>
+            <div class="order-details">
+              <p><strong>Client:</strong> {{ order.customerName }}</p>
+              <p><strong>Total:</strong> {{ order.total }} FCFA</p>
+              <p><strong>Articles:</strong> {{ order.items.length }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="activeOrders.length === 0">
+          <p>📦 Aucune commande active</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Rejection Modal -->
+<div class="modal-backdrop" *ngIf="selectedDish" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Rejeter le plat</h2>
+    <p>Indiquez la raison du rejet:</p>
+    <textarea 
+      [(ngModel)]="rejectionReason"
+      placeholder="Ex: Photos de mauvaise qualité, description incomplète..."
+      rows="4"
+    ></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-danger" (click)="rejectDish(selectedDish!.id)">Confirmer le rejet</button>
+    </div>
+  </div>
+</div>

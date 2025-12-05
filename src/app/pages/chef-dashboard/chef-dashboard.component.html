@@ -1,0 +1,349 @@
+<!-- src/app/pages/chef-dashboard/chef-dashboard.component.html -->
+<div class="chef-dashboard">
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <h2>👨‍🍳 Chef</h2>
+        <p>{{ currentUser?.name }}</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'overview'"
+          (click)="changeSection('overview')"
+        >
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Vue d'ensemble</span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'dishes'"
+          (click)="changeSection('dishes')"
+        >
+          <span class="nav-icon">🍽️</span>
+          <span class="nav-label">Mes plats</span>
+          <span class="badge">{{ stats.totalDishes }}</span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'add-dish'"
+          (click)="changeSection('add-dish')"
+        >
+          <span class="nav-icon">➕</span>
+          <span class="nav-label">Ajouter un plat</span>
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="currentSection === 'orders'"
+          (click)="changeSection('orders')"
+        >
+          <span class="nav-icon">📦</span>
+          <span class="nav-label">Commandes</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary" routerLink="/">
+          ← Retour au site
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+      
+      <!-- Overview Section -->
+      <div class="content-section" *ngIf="currentSection === 'overview'">
+        <h1 class="section-title">📊 Tableau de bord</h1>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🍽️</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalDishes }}</div>
+              <div class="stat-label">Total plats</div>
+            </div>
+          </div>
+
+          <div class="stat-card success">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.approvedDishes }}</div>
+              <div class="stat-label">Approuvés</div>
+            </div>
+          </div>
+
+          <div class="stat-card warning">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.pendingDishes }}</div>
+              <div class="stat-label">En attente</div>
+            </div>
+          </div>
+
+          <div class="stat-card danger">
+            <div class="stat-icon">❌</div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.rejectedDishes }}</div>
+              <div class="stat-label">Rejetés</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="welcome-section">
+          <h2>👋 Bienvenue {{ currentUser?.name }} !</h2>
+          <p>Vous pouvez proposer de nouveaux plats et gérer votre menu depuis ce tableau de bord.</p>
+          <p>Tous les plats soumis seront vérifiés par un administrateur avant d'être publiés sur le site.</p>
+          <button class="btn btn-primary" (click)="changeSection('add-dish')">
+            ➕ Ajouter un nouveau plat
+          </button>
+        </div>
+      </div>
+
+      <!-- My Dishes Section -->
+      <div class="content-section" *ngIf="currentSection === 'dishes'">
+        <h1 class="section-title">🍽️ Mes plats ({{ stats.totalDishes }})</h1>
+
+        <div class="dishes-grid" *ngIf="myDishes.length > 0">
+          <div class="dish-card" *ngFor="let dish of myDishes">
+            <div class="status-badge" [ngClass]="getStatusBadgeClass(dish.approvalStatus)">
+              {{ getStatusText(dish.approvalStatus) }}
+            </div>
+
+            <div class="dish-image">
+              <img [src]="dish.image" [alt]="dish.name" />
+            </div>
+
+            <div class="dish-info">
+              <h3>{{ dish.name }}</h3>
+              <p class="dish-name-en">{{ dish.nameEn }}</p>
+              <p class="dish-description">{{ dish.description }}</p>
+              <p class="dish-price">{{ dish.price }} FCFA</p>
+              
+              <div class="dish-meta">
+                <span>📁 {{ dish.category }}</span>
+                <span *ngIf="dish.preparationTime">⏱️ {{ dish.preparationTime }}</span>
+                <span *ngIf="dish.spicyLevel">🌶️ Niveau {{ dish.spicyLevel }}</span>
+              </div>
+
+              <div class="rejection-reason" *ngIf="dish.approvalStatus === 'rejected' && dish.rejectionReason">
+                <strong>Raison du rejet:</strong>
+                <p>{{ dish.rejectionReason }}</p>
+              </div>
+            </div>
+
+            <div class="dish-actions">
+              <button class="btn btn-danger btn-sm" (click)="deleteDish(dish.id)">
+                🗑️ Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="myDishes.length === 0">
+          <div class="empty-icon">🍽️</div>
+          <h2>Aucun plat</h2>
+          <p>Commencez par ajouter votre premier plat</p>
+          <button class="btn btn-primary" (click)="changeSection('add-dish')">
+            ➕ Ajouter un plat
+          </button>
+        </div>
+      </div>
+
+      <!-- Add Dish Section -->
+      <div class="content-section" *ngIf="currentSection === 'add-dish'">
+        <h1 class="section-title">➕ Ajouter un nouveau plat</h1>
+
+        <form class="dish-form" (ngSubmit)="submitDish()">
+          
+          <!-- Image Upload -->
+          <div class="form-group image-upload">
+            <label>Photo du plat *</label>
+            <div class="image-upload-box">
+              <input 
+                type="file" 
+                accept="image/*" 
+                (change)="onImageSelect($event)"
+                hidden
+                #fileInput
+              />
+              <div class="upload-preview" *ngIf="imagePreview">
+                <img [src]="imagePreview" alt="Preview" />
+                <button type="button" class="btn-change" (click)="fileInput.click()">
+                  Changer
+                </button>
+              </div>
+              <div class="upload-placeholder" *ngIf="!imagePreview" (click)="fileInput.click()">
+                <span class="upload-icon">📷</span>
+                <p>Cliquez pour ajouter une photo</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Info -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Nom du plat (Français) *</label>
+              <input
+                type="text"
+                id="name"
+                [(ngModel)]="newDish.name"
+                name="name"
+                placeholder="Ex: Attiéké Poisson"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="nameEn">Nom du plat (Anglais) *</label>
+              <input
+                type="text"
+                id="nameEn"
+                [(ngModel)]="newDish.nameEn"
+                name="nameEn"
+                placeholder="Ex: Attieke Fish"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea
+              id="description"
+              [(ngModel)]="newDish.description"
+              name="description"
+              rows="3"
+              placeholder="Décrivez votre plat..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="price">Prix (FCFA) *</label>
+              <input
+                type="number"
+                id="price"
+                [(ngModel)]="newDish.price"
+                name="price"
+                min="0"
+                placeholder="Ex: 2000"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="category">Catégorie *</label>
+              <select
+                id="category"
+                [(ngModel)]="newDish.category"
+                name="category"
+                required
+              >
+                <option value="attieke">Attiéké</option>
+                <option value="foutou">Foutou</option>
+                <option value="alloco">Alloco</option>
+                <option value="sauce">Sauce</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Ingredients -->
+          <div class="form-group">
+            <label>Ingrédients *</label>
+            <div class="ingredient-input">
+              <input
+                type="text"
+                [(ngModel)]="ingredientInput"
+                name="ingredientInput"
+                placeholder="Ajouter un ingrédient"
+                (keyup.enter)="addIngredient()"
+              />
+              <button type="button" class="btn btn-secondary" (click)="addIngredient()">
+                + Ajouter
+              </button>
+            </div>
+            <div class="ingredients-list" *ngIf="newDish.ingredients.length > 0">
+              <span 
+                *ngFor="let ingredient of newDish.ingredients; let i = index"
+                class="ingredient-tag"
+              >
+                {{ ingredient }}
+                <button type="button" (click)="removeIngredient(i)">×</button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Additional Info -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="preparationTime">Temps de préparation</label>
+              <input
+                type="text"
+                id="preparationTime"
+                [(ngModel)]="newDish.preparationTime"
+                name="preparationTime"
+                placeholder="Ex: 30 min"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="servings">Portions</label>
+              <input
+                type="number"
+                id="servings"
+                [(ngModel)]="newDish.servings"
+                name="servings"
+                min="1"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="spicyLevel">Niveau épicé (0-5)</label>
+              <input
+                type="number"
+                id="spicyLevel"
+                [(ngModel)]="newDish.spicyLevel"
+                name="spicyLevel"
+                min="0"
+                max="5"
+              />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="resetForm()">
+              Réinitialiser
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="isSubmitting"
+            >
+              <span *ngIf="!isSubmitting">Soumettre le plat</span>
+              <span *ngIf="isSubmitting">Soumission...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Orders Section -->
+      <div class="content-section" *ngIf="currentSection === 'orders'">
+        <h1 class="section-title">📦 Mes commandes</h1>
+        
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <h2>Aucune commande</h2>
+          <p>Les commandes qui vous seront assignées apparaîtront ici</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>

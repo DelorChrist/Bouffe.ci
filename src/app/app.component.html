@@ -1,0 +1,10 @@
+<!-- src/app/app.component.html -->
+<!-- Header et Footer uniquement pour les pages publiques -->
+<app-header *ngIf="!isDashboardRoute()"></app-header>
+
+<main [class.no-header]="isDashboardRoute()">
+  <router-outlet></router-outlet>
+</main>
+
+<app-footer *ngIf="!isDashboardRoute()"></app-footer>
+<app-toast></app-toast>
